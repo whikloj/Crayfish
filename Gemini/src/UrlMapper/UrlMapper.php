@@ -98,14 +98,14 @@ class UrlMapper implements UrlMapperInterface
    * {@inheritdoc}
    */
     public function findUrls(
-      $uri
+        $uri
     ) {
-      $query =
+        $query =
         'SELECT fedora as uri FROM Gemini WHERE drupal = :uri union
         SELECT drupal as uri FROM Gemini WHERE fedora = :uri';
-      return $this->connection->fetchAssoc(
-        $query,
-        ['uri' => $uri]
-      );
+        return $this->connection->fetchAssoc(
+            $query,
+            ['uri' => $uri]
+        );
     }
 }
