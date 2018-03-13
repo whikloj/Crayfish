@@ -7,5 +7,5 @@
 rdfs:label "URI conversion service";
 rdfs:comment "Microservice to recast Drupal URIs as Fedora URIs";
 apix:exposesService islandora:RecastService;
-apix:exposesServiceAt "svc:recast";
+apix:exposesServiceAt "svc:recast/";
 apix:bindsTo ldp:RDFSource .

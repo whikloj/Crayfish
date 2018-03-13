@@ -84,7 +84,7 @@ class RecastController
         if (is_array($mimeType)) {
             $mimeType = reset($mimeType);
         }
-        if (preg_match("/^([^;]+);?/", $mimeType, $matches)) {
+        if (preg_match("/^([^;]+);/", $mimeType, $matches)) {
             $mimeType = $matches[1];
         }
         try {
