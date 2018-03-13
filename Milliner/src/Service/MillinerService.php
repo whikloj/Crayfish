@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Psr7\Response;
 use Islandora\Chullo\IFedoraApi;
-use Islandora\Milliner\Gemini\GeminiClient;
+use Islandora\Crayfish\Commons\Client\GeminiClient;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -25,7 +25,7 @@ class MillinerService implements MillinerServiceInterface
     protected $drupal;
 
     /**
-     * @var \Islandora\Milliner\Gemini\GeminiClient
+     * @var \Islandora\Crayfish\Commons\Client\GeminiClient
      */
     protected $gemini;
 
@@ -44,7 +44,7 @@ class MillinerService implements MillinerServiceInterface
      *
      * @param \Islandora\Chullo\IFedoraApi $fedora
      * @param \GuzzleHttp\Client
-     * @param \Islandora\Milliner\Gemini\GeminiClient
+     * @param \Islandora\Crayfish\Commons\Client\GeminiClient
      * @param string $modifiedDatePredicate
      * @param \Psr\Log\LoggerInterface $log
      */
