@@ -1,8 +1,11 @@
 ---
 
-fedora_base_url: http://localhost:8080/fcrepo/rest
+fedora_resource:
+  base_url: http://localhost:8080/fcrepo/rest
 
 gemini_base_url: http://localhost:8000/gemini
+
+drupal_base_url: http://localhost:8000
 
 debug: false
 
