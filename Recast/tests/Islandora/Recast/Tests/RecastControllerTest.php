@@ -12,28 +12,55 @@ use Psr\Http\Message\StreamInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Class RecastControllerTest
+ *
+ * @package Islandora\Recast\Tests
+ * @coversDefaultClass \Islandora\Recast\Controller\RecastController
+ */
 class RecastControllerTest extends TestCase
 {
-
-    private $fedora_prophecy;
 
     private $gemini_prophecy;
 
     private $logger_prophecy;
 
+  /**
+   * {@inheritdoc}
+   */
     public function setUp()
     {
-        $this->fedora_prophecy = $this->prophesize(IFedoraApi::class);
         $this->gemini_prophecy = $this->prophesize(GeminiClient::class);
         $this->logger_prophecy = $this->prophesize(Logger::class);
     }
+  
+  /**
+   * @covers ::recastOptions
+   */
+    public function testOptions()
+    {
+        $controller = new RecastController(
+            $this->gemini_prophecy->reveal(),
+            $this->logger_prophecy->reveal()
+        );
 
+        $response = $controller->recastOptions();
+        $this->assertTrue($response->getStatusCode() == 200, 'Identify OPTIONS should return 200');
+        $this->assertTrue(
+            $response->headers->get('Content-Type') == 'text/turtle',
+            'Identify OPTIONS should return turtle'
+        );
+    }
 
+  /**
+   * @covers ::recast
+   */
     public function testImageAdd()
     {
         $resource_id = 'http://localhost:8080/fcrepo/rest/object1';
         $input_resource = realpath(__DIR__ . '/../../../resources/drupal_image.json');
-        $output_resource = realpath(__DIR__ . '/../../../resources/drupal_image_add.json');
+        $output_add = realpath(__DIR__ . '/../../../resources/drupal_image_add.json');
+        $output_replace = realpath(__DIR__ . '/../../../resources/drupal_image_replace.json');
 
 
         $this->gemini_prophecy->findByUri('http://localhost:8000/user/1?_format=jsonld')
@@ -73,11 +100,20 @@ class RecastControllerTest extends TestCase
         $request->headers->set('Accept', 'application/ld+json');
         $request->attributes->set('fedora_resource', $mock_fedora_response);
 
+        // Do with add
         $response = $controller->recast($request, $mock_silex_app, 'add');
         $this->assertEquals(200, $response->getStatusCode(), "Invalid status code");
         $json = json_decode($response->getContent(), true);
 
-        $expected = json_decode(file_get_contents($output_resource), true);
+        $expected = json_decode(file_get_contents($output_add), true);
+        $this->assertEquals($expected, $json, "Response does not match expected additions.");
+
+        // Do with replace
+        $response = $controller->recast($request, $mock_silex_app, 'replace');
+        $this->assertEquals(200, $response->getStatusCode(), "Invalid status code");
+        $json = json_decode($response->getContent(), true);
+
+        $expected = json_decode(file_get_contents($output_replace), true);
         $this->assertEquals($expected, $json, "Response does not match expected additions.");
     }
 }

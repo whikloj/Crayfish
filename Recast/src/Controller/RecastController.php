@@ -25,7 +25,7 @@ class RecastController
    */
     protected $availableMethods = [
     'add',
-    'replace'
+    'replace',
     ];
 
   /**
@@ -102,11 +102,10 @@ class RecastController
         );
 
         $resources = $graph->resources();
-        $new_triples = [];
         foreach ($resources as $uri => $data) {
             if (strpos($uri, $app['crayfish.drupal_base_url']) === 0) {
                 $this->log->debug("Checking resource ", [
-                'uri' => $uri
+                'uri' => $uri,
                 ]);
                 $reverse_uri = $this->geminiClient->findByUri($uri);
                 if (!is_null($reverse_uri)) {
@@ -119,13 +118,21 @@ class RecastController
                           'reverse_uri' => $reverse_uri,
                         ]);
                     if (!is_null($predicate)) {
-                                      $new_triples[] = ['p' => $predicate, 'o'=> $reverse_uri];
+                                      $graph->addResource(
+                                          $fedora_uri,
+                                          $predicate,
+                                          $reverse_uri
+                                      );
+                        if (strtolower($operation) == 'replace') {
+                                                          $graph->deleteResource(
+                                                              $fedora_uri,
+                                                              $predicate,
+                                                              $uri
+                                                          );
+                        }
                     }
                 }
             }
-        }
-        foreach ($new_triples as $triple) {
-            $graph->addResource($fedora_uri, $triple['p'], $triple['o']);
         }
         if ($request->headers->has('Accept')) {
             $acceptable_content_types = $request->getAcceptableContentTypes();
@@ -171,6 +178,7 @@ class RecastController
 
   /**
    * Locate the predicate for an object in a graph.
+   *
    * @param $graph
    *   The graph to look in.
    * @param $object
