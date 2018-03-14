@@ -18,7 +18,7 @@ before_install:
 install:
   - git clone https://github.com/Islandora-CLAW/CLAW.git $HOME/CLAW
   - $SCRIPT_DIR/travis_setup_php.sh
-  - for D in */; do (cd $D; echo "in $D"; composer install) done
+  - for D in */; do (cd $D; composer update; composer install) done
 
 script:
   - $SCRIPT_DIR/line_endings.sh $TRAVIS_BUILD_DIR
